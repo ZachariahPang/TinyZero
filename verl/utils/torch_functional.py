@@ -15,20 +15,21 @@
 Contain small torch utilities
 """
 
-from typing import Dict, Union, List, Optional
-
 import os
+from typing import Dict, List, Optional, Union
+
 import torch
 import torch.distributed
 import torch.nn.functional as F
 from tensordict import TensorDict
 from torch import nn
 
-try:
-    from flash_attn.ops.triton.cross_entropy import cross_entropy_loss
-    FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE = True
-except ImportError:
-    FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE = False
+# try:
+#     from flash_attn.ops.triton.cross_entropy import cross_entropy_loss
+#     FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE = True
+# except ImportError:
+#     FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE = False
+FLAH_ATTN_CROSS_ENTROPY_LOSS_AVAILABLE = False
 
 
 def gather_from_labels(data, label):
@@ -353,7 +354,11 @@ def log_probs_from_logits_all_rmpad(input_ids_rmpad, logits_rmpad, indices, batc
     return output
 
 
-from transformers.generation.logits_process import (TemperatureLogitsWarper, TopKLogitsWarper, TopPLogitsWarper)
+from transformers.generation.logits_process import (
+    TemperatureLogitsWarper,
+    TopKLogitsWarper,
+    TopPLogitsWarper,
+)
 
 
 def post_process_logits(input_ids, logits, temperature, top_k, top_p):
@@ -371,9 +376,10 @@ def post_process_logits(input_ids, logits, temperature, top_k, top_p):
 Optimizer related
 """
 
+import math
+
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import LambdaLR
-import math
 
 
 def get_cosine_schedule_with_warmup(
